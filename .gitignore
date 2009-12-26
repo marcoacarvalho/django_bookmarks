@@ -1,0 +1,6 @@
+*.pyc
+dev.db
+nbproject
+*.mwb
+*~
+
