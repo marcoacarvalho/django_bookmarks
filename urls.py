@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     (r'^register/success/$', direct_to_template,
         {'template':'registration/register_success.html'}),
     (r'^save/$', bookmark_save_page),
+    (r'^ajax/tag/autocomplete/$', ajax_tag_autocomplete),
     # Example:
     # (r'^django_bookmarks/', include('django_bookmarks.foo.urls')),
 

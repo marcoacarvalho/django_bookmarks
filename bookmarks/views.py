@@ -8,7 +8,7 @@ from bookmarks.forms import *
 from bookmarks.models import *
 from django.contrib.auth.decorators import login_required
 
-def _bookmark_save(request):
+def _bookmark_save(request, form):
     # Create or get link
     link, dummy = Link.objects.get_or_create(
         url=form.cleaned_data['url']
@@ -28,6 +28,14 @@ def _bookmark_save(request):
     for tag_name in tag_names:
         tag, dummy = Tag.objects.get_or_create(name=tag_name)
         bookmark.tag_set.add(tag)
+    # Share on the main page if requested.
+    if form.cleaned_data['share']:
+        shared, created = SharedBookmark.objects.get_or_create(
+            bookmark=bookmark
+        )
+        if created:
+            shared.users_voted.add(request.user)
+            shared.save()
     # Save bookmark to database
     bookmark.save()
     return bookmark
@@ -59,11 +67,11 @@ def bookmark_save_page(request):
     if request.method == 'POST':
         form = BookmarkSaveForm(request.POST)
         if form.is_valid():
-            bookmark = _bookmark_save(form)
+            bookmark = _bookmark_save(request,form)
             if ajax:
                 variables = RequestContext(request,{
                     'bookmarks':[bookmark],
-                    'show_edit':true,
+                    'show_edit':True,
                     'show_tags':True
                     })
                 return render_to_response(
@@ -71,7 +79,7 @@ def bookmark_save_page(request):
                     )
             else:
                 return HttpResponseRedirect(
-                    'user/%s' % request.user.username)
+                    '/user/%s/' % request.user.username)
         else:
             if ajax:
                 return HttpResponse(u'failure')
@@ -136,10 +144,14 @@ def tag_page(request, tag_name):
     return render_to_response('tag_page.html', variables)
 
 def main_page(request):
+    shared_bookmarks = SharedBookmark.objects.order_by(
+        '-date'
+    )[:10]
     variables = RequestContext(request,{
         'head_title':u'Django Bookmarks',
         'page_title':u'Welcome to Django Bookmarks',
-        'page_body':u'Where you can store and share bookmarks!'
+        'page_body':u'Where you can store and share bookmarks!',
+        'shared_bookmarks': shared_bookmarks
         })
     return render_to_response('main_page.html', variables)
 
@@ -195,3 +207,12 @@ def search_page(request):
         return render_to_response('bookmark_list.html', variables)
     else:
         return render_to_response('search.html', variables)
+
+
+def ajax_tag_autocomplete(request):
+    if 'q' in request.GET:
+        tags = Tag.objects.filter(
+            name__istartswith = request.GET['q']
+            )[:10]
+        return HttpResponse(u'\n'.join(tag.name for tag in tags))
+    return HttpResponse()
