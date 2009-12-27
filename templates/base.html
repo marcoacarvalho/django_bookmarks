@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Django Bookmarks | {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/site_media/style.css" type="text/css" />
+    <script type="text/javascript" src="/site_media/jquery.js"></script>
+    {% block external %}{% endblock %}
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+      <div id="nav">
+          <a href="/">home</a> |
+          {% if user.is_authenticated %}
+          <a href="/save/">submit</a> |
+          <a href="/search/">search</a> | 
+          <a href="/user/{{ user.username }}/">
+              {{ user.username }}</a> |
+          <a href="/logout">logout</a>
+          {% else %}
+            <a href="/login/">login</a> |
+            <a href="/register/">register</a>
+          {% endif %}
+      </div>
+      <h1>{% block head %}{% endblock %}</h1>
+      {% block content %}{% endblock %}
+  </body>
+</html>
