@@ -2,6 +2,8 @@
 <ul class="bookmarks">
     {% for shared_bookmark in shared_bookmarks %}
     <li>
+        <a href="/vote/?id={{ shared_bookmark.id }}"
+           class="vote">[+]</a>
         <a href="{{ shared_bookmark.bookmark.link.url }}" class="title">
             {{ shared_bookmark.bookmark.title }}
         </a>
@@ -11,7 +13,9 @@
            class="username">
             {{ shared_bookmark.bookmark.user.username }}</a> |
             <span class="vote-count">Votes:
-            {{ shared_bookmark.votes }}</span>
+            {{ shared_bookmark.votes }}</span> |
+            <a href="/bookmark/{{ shared_bookmark.id }}/">
+                comments</a>
     </li>
     {% endfor %}
 </ul>

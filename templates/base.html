@@ -8,18 +8,21 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
+      <div id="navbar">
       <div id="nav">
-          <a href="/">home</a> |
+          <a href="/">&nbsp; home</a> |
+          <a href="/popular/">popular</a> |
           {% if user.is_authenticated %}
           <a href="/save/">submit</a> |
           <a href="/search/">search</a> | 
           <a href="/user/{{ user.username }}/">
               {{ user.username }}</a> |
-          <a href="/logout">logout</a>
+              <a href="/logout">logout &nbsp;</a>
           {% else %}
             <a href="/login/">login</a> |
             <a href="/register/">register</a>
           {% endif %}
+      </div>
       </div>
       <h1>{% block head %}{% endblock %}</h1>
       {% block content %}{% endblock %}

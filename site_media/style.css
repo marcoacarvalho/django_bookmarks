@@ -1,3 +1,13 @@
+body{
+    font-family: Arial,Helvetica,sans-serif;
+    background-color: #cccccc;
+}
+#navbar{
+    float:left;
+    background-color: #171a4a;
+    width:100%;
+}
+
 #nav {
     float: right;
     background-color: #171a4a;
@@ -40,4 +50,14 @@ ul.tags, ul.tags li {
 
 ul.bookmarks .edit {
     font-size:70%;
+}
+
+textarea {
+    display:block;
+}
+
+.comment {
+    margin:1em;
+    padding:5px;
+    border:1px solid #000;
 }

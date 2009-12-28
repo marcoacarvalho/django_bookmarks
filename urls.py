@@ -7,15 +7,18 @@ from django.views.generic.simple import direct_to_template
 site_media = os.path.join(os.path.dirname(__file__), 'site_media')
 
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', main_page),
+    (r'^popular/$', popular_page),
+    (r'^comments/', include('django.contrib.comments.urls')),
     (r'^user/(\w+)/$', user_page),
     (r'^tag/([^\s]+)/$', tag_page),
     (r'^tag/$', tag_cloud_page),
     (r'^search/$', search_page),
+    (r'^bookmark/(\d+)/$', bookmark_page),
     (r'^login/$', 'django.contrib.auth.views.login'),
     (r'^logout/$', logout_page),
     (r'^register/$', register_page),
@@ -23,6 +26,7 @@ urlpatterns = patterns('',
     (r'^register/success/$', direct_to_template,
         {'template':'registration/register_success.html'}),
     (r'^save/$', bookmark_save_page),
+    (r'^vote/$', bookmark_vote_page),
     (r'^ajax/tag/autocomplete/$', ajax_tag_autocomplete),
     # Example:
     # (r'^django_bookmarks/', include('django_bookmarks.foo.urls')),
@@ -32,5 +36,5 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    # (r'^admin/', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 )

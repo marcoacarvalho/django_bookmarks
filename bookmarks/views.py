@@ -7,6 +7,7 @@ from django.contrib.auth import logout
 from bookmarks.forms import *
 from bookmarks.models import *
 from django.contrib.auth.decorators import login_required
+from datetime import datetime, timedelta
 
 def _bookmark_save(request, form):
     # Create or get link
@@ -216,3 +217,47 @@ def ajax_tag_autocomplete(request):
             )[:10]
         return HttpResponse(u'\n'.join(tag.name for tag in tags))
     return HttpResponse()
+
+@login_required
+def bookmark_vote_page(request):
+    if 'id' in request.GET:
+        try:
+            id = request.GET['id']
+            shared_bookmark = SharedBookmark.objects.get(id=id)
+            user_voted = shared_bookmark.users_voted.filter(
+                username=request.user.username
+            )
+            if not user_voted:
+                shared_bookmark.votes += 1
+                shared_bookmark.users_voted.add(request.user)
+                shared_bookmark.save()
+        except SharedBookmark.DoesNotExist:
+            raise Http404('Bookmark not found.')
+    if 'HTTP_REFERER' in request.META:
+        return HttpResponseRedirect (request.META['HTTP_REFERER'])
+    return HttpResponseRedirect('/')
+
+def popular_page(request):
+    today = datetime.today()
+    yesterday = today - timedelta(1)
+
+    shared_bookmarks = SharedBookmark.objects.filter(
+        date__gt=yesterday
+    )
+    shared_bookmarks = shared_bookmarks.order_by(
+        '-votes'
+    )[:10]
+    variables = RequestContext(request, {
+        'shared_bookmarks': shared_bookmarks
+    })
+    return render_to_response('popular_page.html', variables)
+
+def bookmark_page(request, bookmark_id):
+    shared_bookmark = get_object_or_404(
+        SharedBookmark,
+        id=bookmark_id
+    )
+    variables = RequestContext(request, {
+        'shared_bookmark':shared_bookmark
+    })
+    return render_to_response('bookmark_page.html', variables)
